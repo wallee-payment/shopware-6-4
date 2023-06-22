@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Storefront\Account\Controller;
+namespace PostFinanceCheckoutPayment\Core\Storefront\Account\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\{
@@ -16,17 +16,17 @@ use Symfony\Component\{
 	HttpFoundation\Response,
 	Routing\Annotation\Route,
 	Security\Core\Exception\AccessDeniedException};
-use WalleePayment\Core\{
+use PostFinanceCheckoutPayment\Core\{
 	Api\Transaction\Service\TransactionService,
 	Settings\Service\SettingsService};
 
 /**
- * @Route(defaults={"_routeScope"={"storefront"}})
+ * @RouteScope(scopes={"storefront"})
  */
 class AccountOrderController extends StorefrontController {
 
 	/**
-	 * @var \WalleePayment\Core\Settings\Service\SettingsService
+	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
@@ -36,14 +36,14 @@ class AccountOrderController extends StorefrontController {
 	protected $logger;
 
 	/**
-	 * @var \WalleePayment\Core\Api\Transaction\Service\TransactionService
+	 * @var \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService
 	 */
 	protected $transactionService;
 
 	/**
 	 * AccountOrderController constructor.
-	 * @param \WalleePayment\Core\Settings\Service\SettingsService           $settingsService
-	 * @param \WalleePayment\Core\Api\Transaction\Service\TransactionService $transactionService
+	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService           $settingsService
+	 * @param \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService $transactionService
 	 */
 	public function __construct(SettingsService $settingsService, TransactionService $transactionService)
 	{
@@ -70,12 +70,12 @@ class AccountOrderController extends StorefrontController {
 	 * @param \Shopware\Core\System\SalesChannel\SalesChannelContext $salesChannelContext
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 *
-	 * @throws \Wallee\Sdk\ApiException
-	 * @throws \Wallee\Sdk\Http\ConnectionException
-	 * @throws \Wallee\Sdk\VersioningException
+	 * @throws \PostFinanceCheckout\Sdk\ApiException
+	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
+	 * @throws \PostFinanceCheckout\Sdk\VersioningException
 	 * @Route(
-	 *     "/wallee/account/order/download/invoice/document/{orderId}",
-	 *     name="frontend.wallee.account.order.download.invoice.document",
+	 *     "/postfinancecheckout/account/order/download/invoice/document/{orderId}",
+	 *     name="frontend.postfinancecheckout.account.order.download.invoice.document",
 	 *     methods={"GET"}
 	 *     )
 	 */

@@ -1,7 +1,3 @@
-# 4.0.54
-- Support of Shopware 6.5
-- Support of latest PHP SDK 3.2.0
-
 # 4.0.53
 - Creation of a new column in the transaction table called erp_merchant_id
 
@@ -251,4 +247,4 @@
 - Save refunds to db, and reload order tab on changes
 
 # 1.0.0
-- First version of the Wallee integrations for Shopware 6
+- First version of the PostFinanceCheckout integrations for Shopware 6

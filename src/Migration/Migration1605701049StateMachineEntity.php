@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Migration;
+namespace PostFinanceCheckoutPayment\Migration;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
@@ -12,7 +12,7 @@ use Shopware\Core\System\StateMachine\StateMachineDefinition;
 /**
  * Class Migration1605701049StateMachineEntity
  *
- * @package WalleePayment\Migration
+ * @package PostFinanceCheckoutPayment\Migration
  */
 class Migration1605701049StateMachineEntity extends MigrationStep
 {
@@ -37,7 +37,7 @@ class Migration1605701049StateMachineEntity extends MigrationStep
         try {
         	// Enable mark transaction as paid when it's on status reminded
 			$table = StateMachineDefinition::ENTITY_NAME;
-			$stateMachineId =  $connection->fetchOne(
+			$stateMachineId =  $connection->fetchColumn(
 				"SELECT id FROM `$table` WHERE `technical_name` = :technical_name",
 				[
 					'technical_name' => 'order_transaction.state',
@@ -45,7 +45,7 @@ class Migration1605701049StateMachineEntity extends MigrationStep
 			);
 
 			$table = StateMachineStateDefinition::ENTITY_NAME;
-			$remindedStateId =  $connection->fetchOne(
+			$remindedStateId =  $connection->fetchColumn(
 				"SELECT id FROM `$table` WHERE `technical_name` = :technical_name AND `state_machine_id` = :state_machine_id",
 				[
 					'technical_name' => 'reminded',
@@ -53,7 +53,7 @@ class Migration1605701049StateMachineEntity extends MigrationStep
 				]
 			);
 
-			$paidStateId =  $connection->fetchOne(
+			$paidStateId =  $connection->fetchColumn(
 				"SELECT id FROM `$table` WHERE `technical_name` = :technical_name AND `state_machine_id` = :state_machine_id",
 				[
 					'technical_name' => 'paid',

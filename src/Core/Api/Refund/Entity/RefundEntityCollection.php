@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Api\Refund\Entity;
+namespace PostFinanceCheckoutPayment\Core\Api\Refund\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class RefundEntityCollection
  *
- * @package WalleePayment\Core\Api\Refund\Entity
+ * @package PostFinanceCheckoutPayment\Core\Api\Refund\Entity
  *
  * @method void              add(RefundEntity $entity)
  * @method void              set(string $key, RefundEntity $entity)
@@ -21,7 +21,7 @@ class RefundEntityCollection extends EntityCollection {
 
 	/**
 	 * @param int $transactionId
-	 * @return \WalleePayment\Core\Api\Refund\Entity\RefundEntityCollection
+	 * @return \PostFinanceCheckoutPayment\Core\Api\Refund\Entity\RefundEntityCollection
 	 */
 	public function filterByTransactionId(int $transactionId): RefundEntityCollection
 	{
@@ -34,7 +34,7 @@ class RefundEntityCollection extends EntityCollection {
 	 * Get by refund id
 	 *
 	 * @param int $refundId
-	 * @return \WalleePayment\Core\Api\Refund\Entity\RefundEntity|null
+	 * @return \PostFinanceCheckoutPayment\Core\Api\Refund\Entity\RefundEntity|null
 	 */
 	public function getByRefundId(int $refundId): ?RefundEntity
 	{

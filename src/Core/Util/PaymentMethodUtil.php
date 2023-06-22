@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Util;
+namespace PostFinanceCheckoutPayment\Core\Util;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -11,12 +11,12 @@ use Shopware\Core\{
 	Framework\DataAbstractionLayer\Search\Filter\NotFilter,
 	Framework\DataAbstractionLayer\Search\Sorting\FieldSorting,
 	System\SalesChannel\SalesChannelCollection,};
-use WalleePayment\Core\Checkout\PaymentHandler\WalleePaymentHandler;
+use PostFinanceCheckoutPayment\Core\Checkout\PaymentHandler\PostFinanceCheckoutPaymentHandler;
 
 /**
  * Class PaymentMethodUtil
  *
- * @package WalleePayment\Core\Util
+ * @package PostFinanceCheckoutPayment\Core\Util
  */
 class PaymentMethodUtil {
 
@@ -73,9 +73,9 @@ class PaymentMethodUtil {
 	 * @param \Shopware\Core\Framework\Context $context
 	 * @param string|null                      $salesChannelId
 	 */
-	public function setWalleeAsDefaultPaymentMethod(Context $context, ?string $salesChannelId = null): void
+	public function setPostFinanceCheckoutAsDefaultPaymentMethod(Context $context, ?string $salesChannelId = null): void
 	{
-		$paymentMethodIds = $this->getWalleePaymentMethodIds($context);
+		$paymentMethodIds = $this->getPostFinanceCheckoutPaymentMethodIds($context);
 		if (empty($paymentMethodIds)) {
 			return;
 		}
@@ -108,10 +108,10 @@ class PaymentMethodUtil {
 	 * @param \Shopware\Core\Framework\Context $context
 	 * @return array
 	 */
-	public function getWalleePaymentMethodIds(Context $context): array
+	public function getPostFinanceCheckoutPaymentMethodIds(Context $context): array
 	{
 		$criteria = (new Criteria())
-			->addFilter(new EqualsFilter('handlerIdentifier', WalleePaymentHandler::class))
+			->addFilter(new EqualsFilter('handlerIdentifier', PostFinanceCheckoutPaymentHandler::class))
 			->addSorting(new FieldSorting('position'));
 
 		return $this->paymentRepository->searchIds($criteria, $context)->getIds();
@@ -153,7 +153,7 @@ class PaymentMethodUtil {
 			->addFilter(new NotFilter(
 				NotFilter::CONNECTION_AND,
 				[
-					new EqualsFilter('handlerIdentifier', WalleePaymentHandler::class),
+					new EqualsFilter('handlerIdentifier', PostFinanceCheckoutPaymentHandler::class),
 				]
 			));
 

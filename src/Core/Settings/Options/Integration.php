@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Settings\Options;
+namespace PostFinanceCheckoutPayment\Core\Settings\Options;
 
 /**
  * Class Integration
  *
- * @package WalleePayment\Core\Settings\Options
+ * @package PostFinanceCheckoutPayment\Core\Settings\Options
  */
 class Integration {
 

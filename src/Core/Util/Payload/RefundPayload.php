@@ -1,27 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Util\Payload;
+namespace PostFinanceCheckoutPayment\Core\Util\Payload;
 
-use Wallee\Sdk\{
+use PostFinanceCheckout\Sdk\{
 	Model\LineItem,
 	Model\RefundCreate,
 	Model\RefundType,
 	Model\Transaction,
 	Model\TransactionState};
-use WalleePayment\Core\Util\Exception\InvalidPayloadException;
+use PostFinanceCheckoutPayment\Core\Util\Exception\InvalidPayloadException;
 
 /**
  * Class RefundPayload
  *
- * @package WalleePayment\Core\Util\Payload
+ * @package PostFinanceCheckoutPayment\Core\Util\Payload
  */
 class RefundPayload extends AbstractPayload {
 
 	/**
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @param string                                       $lineItemId
 	 * @param int                                          $quantity
-	 * @return \Wallee\Sdk\Model\RefundCreate|null
+	 * @return \PostFinanceCheckout\Sdk\Model\RefundCreate|null
 	 * @throws \Exception
 	 */
 	public function get(Transaction $transaction, string $lineItemId, int $quantity): ?RefundCreate
@@ -48,7 +48,7 @@ class RefundPayload extends AbstractPayload {
 			($transaction->getState() == TransactionState::FULFILL) &&
 			($amount <= floatval($transaction->getAuthorizationAmount()))
 		) {
-			$reduction = new \Wallee\Sdk\Model\LineItemReductionCreate();
+			$reduction = new \PostFinanceCheckout\Sdk\Model\LineItemReductionCreate();
 			$reduction->setLineItemUniqueId($lineItem['unique_id']);
 			$reduction->setQuantityReduction($quantity);
 			$reduction->setUnitPriceReduction($price);
@@ -73,9 +73,9 @@ class RefundPayload extends AbstractPayload {
 	}
 
 	/**
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @param float                                        $amount
-	 * @return \Wallee\Sdk\Model\RefundCreate|null
+	 * @return \PostFinanceCheckout\Sdk\Model\RefundCreate|null
 	 * @throws \Exception
 	 */
 	public function getByAmount(Transaction $transaction, float $amount): ?RefundCreate

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Storefront\Checkout\Subscriber;
+namespace PostFinanceCheckoutPayment\Core\Storefront\Checkout\Subscriber;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\{
@@ -10,16 +10,16 @@ use Shopware\Core\{
 	Content\MailTemplate\Service\Event\MailBeforeValidateEvent};
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use WalleePayment\Core\{
+use PostFinanceCheckoutPayment\Core\{
 	Api\Transaction\Service\OrderMailService,
-	Checkout\PaymentHandler\WalleePaymentHandler,
+	Checkout\PaymentHandler\PostFinanceCheckoutPaymentHandler,
 	Settings\Service\SettingsService,
 	Util\PaymentMethodUtil};
 
 /**
  * Class CheckoutSubscriber
  *
- * @package WalleePayment\Storefront\Checkout\Subscriber
+ * @package PostFinanceCheckoutPayment\Storefront\Checkout\Subscriber
  */
 class CheckoutSubscriber implements EventSubscriberInterface {
 
@@ -29,20 +29,20 @@ class CheckoutSubscriber implements EventSubscriberInterface {
 	protected $logger;
 
 	/**
-	 * @var \WalleePayment\Core\Util\PaymentMethodUtil
+	 * @var \PostFinanceCheckoutPayment\Core\Util\PaymentMethodUtil
 	 */
 	private $paymentMethodUtil;
 
 	/**
-	 * @var \WalleePayment\Core\Settings\Service\SettingsService
+	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
 	 */
 	private $settingsService;
 
 	/**
 	 * CheckoutSubscriber constructor.
 	 *
-	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
-	 * @param \WalleePayment\Core\Util\PaymentMethodUtil           $paymentMethodUtil
+	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \PostFinanceCheckoutPayment\Core\Util\PaymentMethodUtil           $paymentMethodUtil
 	 */
 	public function __construct(SettingsService $settingsService, PaymentMethodUtil $paymentMethodUtil)
 	{
@@ -89,9 +89,9 @@ class CheckoutSubscriber implements EventSubscriberInterface {
 
 		if (!empty($order) && $order->getAmountTotal() > 0){
 
-			$isWalleeEmailSettingEnabled = $this->settingsService->getSettings($order->getSalesChannelId())->isEmailEnabled();
+			$isPostFinanceCheckoutEmailSettingEnabled = $this->settingsService->getSettings($order->getSalesChannelId())->isEmailEnabled();
 
-			if (!$isWalleeEmailSettingEnabled) { //setting is disabled
+			if (!$isPostFinanceCheckoutEmailSettingEnabled) { //setting is disabled
 				return;
 			}
 
@@ -104,8 +104,8 @@ class CheckoutSubscriber implements EventSubscriberInterface {
 				return;
 			}
 
-			$isWalleePM = WalleePaymentHandler::class == $orderTransactionLast->getPaymentMethod()->getHandlerIdentifier();
-			if (!$isWalleePM) { // not our payment method
+			$isPostFinanceCheckoutPM = PostFinanceCheckoutPaymentHandler::class == $orderTransactionLast->getPaymentMethod()->getHandlerIdentifier();
+			if (!$isPostFinanceCheckoutPM) { // not our payment method
 				return;
 			}
 
@@ -119,9 +119,9 @@ class CheckoutSubscriber implements EventSubscriberInterface {
 				return;
 			}
 
-			$isWalleeEmail = isset($templateData[OrderMailService::EMAIL_ORIGIN_IS_WALLEE]);
+			$isPostFinanceCheckoutEmail = isset($templateData[OrderMailService::EMAIL_ORIGIN_IS_POSTFINANCECHECKOUT]);
 
-			if (!$isWalleeEmail) {
+			if (!$isPostFinanceCheckoutEmail) {
 				$this->logger->info('Email disabled for ', ['orderId' => $order->getId()]);
 				$event->stopPropagation();
 			}
@@ -137,22 +137,22 @@ class CheckoutSubscriber implements EventSubscriberInterface {
 			$settings = $this->settingsService->getValidSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
 			if (is_null($settings)) {
 				$this->logger->notice('Removing payment methods because settings are invalid');
-				$this->removeWalleePaymentMethodFromConfirmPage($event);
+				$this->removePostFinanceCheckoutPaymentMethodFromConfirmPage($event);
 			}
 
 		} catch (\Exception $e) {
 			$this->logger->error($e->getMessage());
-			$this->removeWalleePaymentMethodFromConfirmPage($event);
+			$this->removePostFinanceCheckoutPaymentMethodFromConfirmPage($event);
 		}
 	}
 
 	/**
 	 * @param \Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent $event
 	 */
-	private function removeWalleePaymentMethodFromConfirmPage(CheckoutConfirmPageLoadedEvent $event): void
+	private function removePostFinanceCheckoutPaymentMethodFromConfirmPage(CheckoutConfirmPageLoadedEvent $event): void
 	{
 		$paymentMethodCollection = $event->getPage()->getPaymentMethods();
-		$paymentMethodIds        = $this->paymentMethodUtil->getWalleePaymentMethodIds($event->getContext());
+		$paymentMethodIds        = $this->paymentMethodUtil->getPostFinanceCheckoutPaymentMethodIds($event->getContext());
 		foreach ($paymentMethodIds as $paymentMethodId) {
 			$paymentMethodCollection->remove($paymentMethodId);
 		}

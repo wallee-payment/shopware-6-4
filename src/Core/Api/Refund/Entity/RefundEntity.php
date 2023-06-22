@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Api\Refund\Entity;
+namespace PostFinanceCheckoutPayment\Core\Api\Refund\Entity;
 
 use Shopware\Core\{
 	Framework\DataAbstractionLayer\Entity,
 	Framework\DataAbstractionLayer\EntityIdTrait};
-use WalleePayment\Core\Api\Transaction\Entity\TransactionEntityDefinition;
+use PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntityDefinition;
 
 /**
  * Class RefundEntity
  *
- * @package WalleePayment\Core\Api\Refund\Entity
+ * @package PostFinanceCheckoutPayment\Core\Api\Refund\Entity
  */
 class RefundEntity extends Entity {
 
@@ -37,7 +37,7 @@ class RefundEntity extends Entity {
 	protected $state;
 
 	/**
-	 * @var ?\WalleePayment\Core\Api\Transaction\Entity\TransactionEntityDefinition
+	 * @var ?\PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntityDefinition
 	 */
 	protected $transaction;
 
@@ -112,7 +112,7 @@ class RefundEntity extends Entity {
 
 	/**
 	 *
-	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntityDefinition|null
+	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntityDefinition|null
 	 */
 	public function getTransaction(): ?TransactionEntityDefinition
 	{
@@ -120,7 +120,7 @@ class RefundEntity extends Entity {
 	}
 
 	/**
-	 * @param \WalleePayment\Core\Api\Transaction\Entity\TransactionEntityDefinition $transaction
+	 * @param \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntityDefinition $transaction
 	 */
 	public function setTransaction(TransactionEntityDefinition $transaction): void
 	{

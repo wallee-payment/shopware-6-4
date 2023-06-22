@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Settings\Struct;
+namespace PostFinanceCheckoutPayment\Core\Settings\Struct;
 
 use Shopware\Core\Framework\Struct\Struct;
-use Wallee\Sdk\ApiClient;
-use WalleePayment\Core\Util\Analytics\Analytics;
+use PostFinanceCheckout\Sdk\ApiClient;
+use PostFinanceCheckoutPayment\Core\Util\Analytics\Analytics;
 
 /**
  * Class Settings
  *
- * @package WalleePayment\Core\Settings\Struct
+ * @package PostFinanceCheckoutPayment\Core\Settings\Struct
  */
 class Settings extends Struct {
 
 	/**
-	 * @var \Wallee\Sdk\ApiClient
+	 * @var \PostFinanceCheckout\Sdk\ApiClient
 	 */
 	protected $apiClient;
 
@@ -224,13 +224,13 @@ class Settings extends Struct {
 	/**
 	 * Get SDK ApiClient
 	 *
-	 * @return \Wallee\Sdk\ApiClient
+	 * @return \PostFinanceCheckout\Sdk\ApiClient
 	 */
 	public function getApiClient(): ApiClient
 	{
 		if (is_null($this->apiClient)) {
 			$this->apiClient   = new ApiClient($this->getUserId(), $this->getApplicationKey());
-			$apiClientBasePath = getenv('WALLEE_API_BASE_PATH') ? getenv('WALLEE_API_BASE_PATH') : $this->apiClient->getBasePath();
+			$apiClientBasePath = getenv('POSTFINANCECHECKOUT_API_BASE_PATH') ? getenv('POSTFINANCECHECKOUT_API_BASE_PATH') : $this->apiClient->getBasePath();
 			$this->apiClient->setBasePath($apiClientBasePath);
 			Analytics::addHeaders($this->apiClient);
 		}

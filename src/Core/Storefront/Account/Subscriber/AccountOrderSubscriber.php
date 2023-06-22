@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Storefront\Account\Subscriber;
+namespace PostFinanceCheckoutPayment\Core\Storefront\Account\Subscriber;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Storefront\Page\Account\Order\AccountOrderPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use WalleePayment\Core\Settings\Service\SettingsService;
+use PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService;
 
 /**
  * Class AccountOrderSubscriber
  *
- * @package WalleePayment\Core\Storefront\Account\Subscriber
+ * @package PostFinanceCheckoutPayment\Core\Storefront\Account\Subscriber
  */
 class AccountOrderSubscriber implements EventSubscriberInterface {
 
@@ -21,14 +21,14 @@ class AccountOrderSubscriber implements EventSubscriberInterface {
 	protected $logger;
 
 	/**
-	 * @var \WalleePayment\Core\Settings\Service\SettingsService
+	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
 	 */
 	private $settingsService;
 
 	/**
 	 * CheckoutSubscriber constructor.
 	 *
-	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(SettingsService $settingsService)
 	{
@@ -64,20 +64,20 @@ class AccountOrderSubscriber implements EventSubscriberInterface {
 	 */
 	public function onAccountOrderPageLoaded(AccountOrderPageLoadedEvent $event): void
 	{
-		$walleeSettings = new ArrayStruct();
-		$walleeSettings->set(SettingsService::CONFIG_STOREFRONT_INVOICE_DOWNLOAD_ENABLED, false);
+		$postfinancecheckoutSettings = new ArrayStruct();
+		$postfinancecheckoutSettings->set(SettingsService::CONFIG_STOREFRONT_INVOICE_DOWNLOAD_ENABLED, false);
 		try {
 			$settings = $this->settingsService->getValidSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
 			if (is_null($settings)) {
 				$this->logger->notice('Disabling invoice downloads');
 			} else {
-				$walleeSettings->set(SettingsService::CONFIG_STOREFRONT_INVOICE_DOWNLOAD_ENABLED, $settings->isStorefrontInvoiceDownloadEnabled());
+				$postfinancecheckoutSettings->set(SettingsService::CONFIG_STOREFRONT_INVOICE_DOWNLOAD_ENABLED, $settings->isStorefrontInvoiceDownloadEnabled());
 			}
 
 		} catch (\Exception $e) {
 			$this->logger->error($e->getMessage());
 		}
 
-		$event->getPage()->addExtension('walleeSettings', $walleeSettings);
+		$event->getPage()->addExtension('postfinancecheckoutSettings', $postfinancecheckoutSettings);
 	}
 }

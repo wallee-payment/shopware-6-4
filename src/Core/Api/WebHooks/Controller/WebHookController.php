@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Api\WebHooks\Controller;
+namespace PostFinanceCheckoutPayment\Core\Api\WebHooks\Controller;
 
 use Doctrine\DBAL\{
 	Connection,
@@ -27,13 +27,13 @@ use Symfony\Component\{HttpFoundation\JsonResponse,
 	HttpFoundation\Request,
 	HttpFoundation\Response,
 	Routing\Annotation\Route};
-use Wallee\Sdk\{
+use PostFinanceCheckout\Sdk\{
 	Model\RefundState,
 	Model\Transaction,
 	Model\TransactionInvoiceState,
 	Model\TransactionState,
 	Model\TransactionInvoice,};
-use WalleePayment\Core\{
+use PostFinanceCheckoutPayment\Core\{
 	Api\OrderDeliveryState\Handler\OrderDeliveryStateHandler,
 	Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService,
 	Api\Refund\Service\RefundService,
@@ -46,9 +46,9 @@ use WalleePayment\Core\{
 /**
  * Class WebHookController
  *
- * @package WalleePayment\Core\Api\WebHooks\Controller
+ * @package PostFinanceCheckoutPayment\Core\Api\WebHooks\Controller
  *
- * @Route(defaults={"_routeScope"={"api"}})
+ * @RouteScope(scopes={"api"})
  */
 class WebHookController extends AbstractController {
 
@@ -63,7 +63,7 @@ class WebHookController extends AbstractController {
 	protected $logger;
 
 	/**
-	 * @var \WalleePayment\Core\Api\Transaction\Service\OrderMailService
+	 * @var \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\OrderMailService
 	 */
 	protected $orderMailService;
 
@@ -73,27 +73,27 @@ class WebHookController extends AbstractController {
 	protected $orderTransactionStateHandler;
 
 	/**
-	 * @var \WalleePayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService
+	 * @var \PostFinanceCheckoutPayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService
 	 */
 	protected $paymentMethodConfigurationService;
 
 	/**
-	 * @var \WalleePayment\Core\Settings\Struct\Settings
+	 * @var \PostFinanceCheckoutPayment\Core\Settings\Struct\Settings
 	 */
 	protected $settings;
 
 	/**
-	 * @var \WalleePayment\Core\Settings\Service\SettingsService
+	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
 	/**
-	 * @var \WalleePayment\Core\Api\Refund\Service\RefundService
+	 * @var \PostFinanceCheckoutPayment\Core\Api\Refund\Service\RefundService
 	 */
 	protected $refundService;
 
 	/**
-	 * @var \WalleePayment\Core\Api\Transaction\Service\TransactionService
+	 * @var \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService
 	 */
 	protected $transactionService;
 
@@ -118,7 +118,7 @@ class WebHookController extends AbstractController {
 		TransactionState::VOIDED,
 	];
 
-	protected $walleeTransactionSuccessStates = [
+	protected $postfinancecheckoutTransactionSuccessStates = [
 		TransactionState::AUTHORIZED,
 		TransactionState::COMPLETED,
 		TransactionState::FULFILL,
@@ -142,11 +142,11 @@ class WebHookController extends AbstractController {
 	 * @param \Doctrine\DBAL\Connection                                                                                   $connection
 	 * @param \Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler                       $orderTransactionStateHandler
 	 * @param \Shopware\Core\Checkout\Order\SalesChannel\OrderService                                                     $orderService
-	 * @param \WalleePayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService $paymentMethodConfigurationService
-	 * @param \WalleePayment\Core\Api\Refund\Service\RefundService                                         $refundService
-	 * @param \WalleePayment\Core\Api\Transaction\Service\OrderMailService                                 $orderMailService
-	 * @param \WalleePayment\Core\Api\Transaction\Service\TransactionService                               $transactionService
-	 * @param \WalleePayment\Core\Settings\Service\SettingsService                                         $settingsService
+	 * @param \PostFinanceCheckoutPayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService $paymentMethodConfigurationService
+	 * @param \PostFinanceCheckoutPayment\Core\Api\Refund\Service\RefundService                                         $refundService
+	 * @param \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\OrderMailService                                 $orderMailService
+	 * @param \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService                               $transactionService
+	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService                                         $settingsService
 	 */
 	public function __construct(
 		Connection $connection,
@@ -182,7 +182,7 @@ class WebHookController extends AbstractController {
 	}
 
 	/**
-	 * This is the method Wallee calls
+	 * This is the method PostFinanceCheckout calls
 	 *
 	 * @param \Symfony\Component\HttpFoundation\Request $request
 	 * @param \Shopware\Core\Framework\Context          $context
@@ -190,8 +190,8 @@ class WebHookController extends AbstractController {
 	 *
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
 	 * @Route(
-	 *     "/api/_action/wallee/webHook/callback/{salesChannelId}",
-	 *     name="api.action.wallee.webhook.update",
+	 *     "/api/_action/postfinancecheckout/webHook/callback/{salesChannelId}",
+	 *     name="api.action.postfinancecheckout.webhook.update",
 	 *     options={"seo": "false"},
 	 *     defaults={"csrf_protected"=false, "XmlHttpRequest"=true, "auth_required"=false},
 	 *     methods={"POST"}
@@ -228,15 +228,15 @@ class WebHookController extends AbstractController {
 	}
 
 	/**
-	 * Handle Wallee Payment Method Configuration callback
+	 * Handle PostFinanceCheckout Payment Method Configuration callback
 	 *
 	 * @param \Shopware\Core\Framework\Context $context
 	 * @param string                           $salesChannelId
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
-	 * @throws \Wallee\Sdk\ApiException
-	 * @throws \Wallee\Sdk\Http\ConnectionException
-	 * @throws \Wallee\Sdk\VersioningException
+	 * @throws \PostFinanceCheckout\Sdk\ApiException
+	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
+	 * @throws \PostFinanceCheckout\Sdk\VersioningException
 	 */
 	private function updatePaymentMethodConfiguration(Context $context, string $salesChannelId = null): Response
 	{
@@ -246,9 +246,9 @@ class WebHookController extends AbstractController {
 	}
 
 	/**
-	 * Handle Wallee Refund callback
+	 * Handle PostFinanceCheckout Refund callback
 	 *
-	 * @param \WalleePayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
+	 * @param \PostFinanceCheckoutPayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
 	 * @param \Shopware\Core\Framework\Context                                      $context
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
@@ -259,11 +259,11 @@ class WebHookController extends AbstractController {
 
 		try {
 			/**
-			 * @var \Wallee\Sdk\Model\Transaction $transaction
+			 * @var \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 			 */
 			$refund  = $this->settings->getApiClient()->getRefundService()
 									  ->read($callBackData->getSpaceId(), $callBackData->getEntityId());
-			$orderId = $refund->getTransaction()->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_ID];
+			$orderId = $refund->getTransaction()->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_ID];
 
 			if(!empty($orderId)) {
 
@@ -271,7 +271,7 @@ class WebHookController extends AbstractController {
 
 					$this->refundService->upsert($refund, $context);
 
-					$orderTransactionId = $refund->getTransaction()->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_TRANSACTION_ID];
+					$orderTransactionId = $refund->getTransaction()->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID];
 					$orderTransaction   = $this->getOrderTransaction($orderId, $context);
 					if (
 						in_array(
@@ -350,7 +350,7 @@ class WebHookController extends AbstractController {
 
 			$data = [
 				'id'                         => $orderId,
-				'wallee_lock' => date('Y-m-d H:i:s'),
+				'postfinancecheckout_lock' => date('Y-m-d H:i:s'),
 			];
 
 			$order = $this->container->get('order.repository')->search(new Criteria([$orderId]), $context)->first();
@@ -415,9 +415,9 @@ class WebHookController extends AbstractController {
 	}
 
 	/**
-	 * Handle Wallee Transaction callback
+	 * Handle PostFinanceCheckout Transaction callback
 	 *
-	 * @param \WalleePayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
+	 * @param \PostFinanceCheckoutPayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
 	 * @param \Shopware\Core\Framework\Context                                      $context
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
@@ -428,17 +428,17 @@ class WebHookController extends AbstractController {
 
 		try {
 			/**
-			 * @var \Wallee\Sdk\Model\Transaction $transaction
+			 * @var \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 			 * @var \Shopware\Core\Checkout\Order\OrderEntity    $order
 			 */
 			$transaction = $this->settings->getApiClient()
 										  ->getTransactionService()
 										  ->read($callBackData->getSpaceId(), $callBackData->getEntityId());
-			$orderId     = $transaction->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_ID];
+			$orderId     = $transaction->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_ID];
 			if(!empty($orderId) && !$transaction->getParent()) {
 				$this->executeLocked($orderId, $context, function () use ($orderId, $transaction, $context, $callBackData) {
 					$this->transactionService->upsert($transaction, $context);
-					$orderTransactionId = $transaction->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_TRANSACTION_ID];
+					$orderTransactionId = $transaction->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID];
 					$orderTransaction   = $this->getOrderTransaction($orderId, $context);
 					$this->logger->info("OrderId: {$orderId} Current state: {$orderTransaction->getStateMachineState()->getTechnicalName()}");
 
@@ -485,21 +485,21 @@ class WebHookController extends AbstractController {
 	}
 
 	/**
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @param \Shopware\Core\Framework\Context             $context
 	 */
 	protected function sendEmail(Transaction $transaction, Context $context): void
 	{
-		$orderId = $transaction->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_ID];
-		if ($this->settings->isEmailEnabled() && in_array($transaction->getState(), $this->walleeTransactionSuccessStates)) {
+		$orderId = $transaction->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_ID];
+		if ($this->settings->isEmailEnabled() && in_array($transaction->getState(), $this->postfinancecheckoutTransactionSuccessStates)) {
 			$this->orderMailService->send($orderId, $context);
 		}
 	}
 
 	/**
-	 * Handle Wallee TransactionInvoice callback
+	 * Handle PostFinanceCheckout TransactionInvoice callback
 	 *
-	 * @param \WalleePayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
+	 * @param \PostFinanceCheckoutPayment\Core\Api\WebHooks\Struct\WebHookRequest $callBackData
 	 * @param \Shopware\Core\Framework\Context                                      $context
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
@@ -510,7 +510,7 @@ class WebHookController extends AbstractController {
 
 		try {
 			/**
-			 * @var \Wallee\Sdk\Model\Transaction        $transaction
+			 * @var \PostFinanceCheckout\Sdk\Model\Transaction        $transaction
 			 * @var TransactionInvoice $transactionInvoice
 			 */
 			$transactionInvoice = $this->settings->getApiClient()->getTransactionInvoiceService()
@@ -518,14 +518,14 @@ class WebHookController extends AbstractController {
 			$orderId            = $transactionInvoice->getCompletion()
 													 ->getLineItemVersion()
 													 ->getTransaction()
-													 ->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_ID];
+													 ->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_ID];
 			if(!empty($orderId)) {
 				$this->executeLocked($orderId, $context, function () use ($orderId, $transactionInvoice, $context) {
 
 					$orderTransactionId = $transactionInvoice->getCompletion()
 															 ->getLineItemVersion()
 															 ->getTransaction()
-															 ->getMetaData()[TransactionPayload::WALLEE_METADATA_ORDER_TRANSACTION_ID];
+															 ->getMetaData()[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID];
 					$orderTransaction   = $this->getOrderTransaction($orderId, $context);
 					$this->updatePriceIfAdditionalItemsExist($transactionInvoice, $orderTransaction, $context);
 

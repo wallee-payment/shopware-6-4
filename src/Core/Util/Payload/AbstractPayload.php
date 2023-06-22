@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace WalleePayment\Core\Util\Payload;
+namespace PostFinanceCheckoutPayment\Core\Util\Payload;
 
 use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractPayload
  * 
- * @package WalleePayment\Core\Util\Payload
+ * @package PostFinanceCheckoutPayment\Core\Util\Payload
  */
 abstract class AbstractPayload {
 
