@@ -2,7 +2,7 @@
 // noinspection ThisExpressionReferencesGlobalObjectJS
 (function (window) {
     /**
-     * PostFinanceCheckoutCheckout
+     * WalleeCheckout
      * @type {
      *      {
      *          payment_method_handler_name: string,
@@ -19,17 +19,17 @@
      *      }
      * }
      */
-    const PostFinanceCheckoutCheckout = {
+    const WalleeCheckout = {
         /**
          * Variables
          */
-        payment_panel_id: 'postfinancecheckout-payment-panel',
-        payment_method_iframe_id: 'postfinancecheckout-payment-iframe',
-        payment_method_handler_name: 'postfinancecheckout_payment_handler',
-        payment_method_handler_status: 'input[name="postfinancecheckout_payment_handler_validation_status"]',
+        payment_panel_id: 'wallee-payment-panel',
+        payment_method_iframe_id: 'wallee-payment-iframe',
+        payment_method_handler_name: 'wallee_payment_handler',
+        payment_method_handler_status: 'input[name="wallee_payment_handler_validation_status"]',
         payment_form_id: 'confirmOrderForm',
-        button_cancel_id: 'postfinancecheckoutOrderCancel',
-        loader_id: 'postfinancecheckoutLoader',
+        button_cancel_id: 'walleeOrderCancel',
+        loader_id: 'walleeLoader',
         checkout_url: null,
         checkout_url_id: 'checkoutUrl',
         cart_recreate_url: null,
@@ -40,14 +40,14 @@
          * Initialize plugin
          */
         init: function () {
-            PostFinanceCheckoutCheckout.activateLoader(true);
+            WalleeCheckout.activateLoader(true);
             this.checkout_url = document.getElementById(this.checkout_url_id).value;
             this.cart_recreate_url = document.getElementById(this.cart_recreate_url_id).value;
 
             document.getElementById(this.button_cancel_id).addEventListener('click', this.recreateCart, false);
             document.getElementById(this.payment_form_id).addEventListener('submit', this.submitPayment, false);
 
-            PostFinanceCheckoutCheckout.getIframe();
+            WalleeCheckout.getIframe();
         },
 
         activateLoader: function (activate) {
@@ -64,15 +64,15 @@
         },
 
         hideLoader: function () {
-            const loader = document.getElementById(PostFinanceCheckoutCheckout.loader_id);
+            const loader = document.getElementById(WalleeCheckout.loader_id);
             if (loader !== null && loader.parentNode !== null) {
                 loader.parentNode.removeChild(loader);
             }
-            PostFinanceCheckoutCheckout.activateLoader(false);
+            WalleeCheckout.activateLoader(false);
         },
 
         recreateCart: function (e) {
-            window.location.href = PostFinanceCheckoutCheckout.cart_recreate_url;
+            window.location.href = WalleeCheckout.cart_recreate_url;
             e.preventDefault();
         },
 
@@ -83,8 +83,8 @@
          * @return {boolean}
          */
         submitPayment: function (event) {
-            PostFinanceCheckoutCheckout.activateLoader(true);
-            PostFinanceCheckoutCheckout.handler.validate();
+            WalleeCheckout.activateLoader(true);
+            WalleeCheckout.handler.validate();
             event.preventDefault();
             return false;
         },
@@ -93,26 +93,26 @@
          * Get iframe
          */
         getIframe: function () {
-            const paymentPanel = document.getElementById(PostFinanceCheckoutCheckout.payment_panel_id);
+            const paymentPanel = document.getElementById(WalleeCheckout.payment_panel_id);
             const paymentMethodConfigurationId = paymentPanel.dataset.id;
-            const iframeContainer = document.getElementById(PostFinanceCheckoutCheckout.payment_method_iframe_id);
+            const iframeContainer = document.getElementById(WalleeCheckout.payment_method_iframe_id);
 
-            if (!PostFinanceCheckoutCheckout.handler) { // iframe has not been loaded yet
+            if (!WalleeCheckout.handler) { // iframe has not been loaded yet
                 // noinspection JSUnresolvedFunction
-                PostFinanceCheckoutCheckout.handler = window.IframeCheckoutHandler(paymentMethodConfigurationId);
+                WalleeCheckout.handler = window.IframeCheckoutHandler(paymentMethodConfigurationId);
                 // noinspection JSUnresolvedFunction
-                PostFinanceCheckoutCheckout.handler.setValidationCallback(function(validationResult){
-                    PostFinanceCheckoutCheckout.hideErrors();
-                    PostFinanceCheckoutCheckout.validationCallBack(validationResult);
+                WalleeCheckout.handler.setValidationCallback(function(validationResult){
+                    WalleeCheckout.hideErrors();
+                    WalleeCheckout.validationCallBack(validationResult);
                 });
-                PostFinanceCheckoutCheckout.handler.setInitializeCallback(PostFinanceCheckoutCheckout.hideLoader());
-                PostFinanceCheckoutCheckout.handler.setHeightChangeCallback(function(height){
+                WalleeCheckout.handler.setInitializeCallback(WalleeCheckout.hideLoader());
+                WalleeCheckout.handler.setHeightChangeCallback(function(height){
                     if(height < 1){ // iframe has no fields
-                        PostFinanceCheckoutCheckout.handler.submit();
+                        WalleeCheckout.handler.submit();
                     }
                 });
-                PostFinanceCheckoutCheckout.handler.create(iframeContainer);
-                setTimeout(PostFinanceCheckoutCheckout.hideLoader(), 10000);
+                WalleeCheckout.handler.create(iframeContainer);
+                setTimeout(WalleeCheckout.hideLoader(), 10000);
 
             }
         },
@@ -124,16 +124,16 @@
         validationCallBack: function (validationResult) {
             if (validationResult.success) {
                 document.querySelector(this.payment_method_handler_status).value = true;
-                PostFinanceCheckoutCheckout.handler.submit();
+                WalleeCheckout.handler.submit();
             } else {
                 document.body.scrollTop = 0;
                 document.documentElement.scrollTop = 0;
 
                 if (validationResult.errors) {
-                    PostFinanceCheckoutCheckout.showErrors(validationResult.errors);
+                    WalleeCheckout.showErrors(validationResult.errors);
                 }
                 document.querySelector(this.payment_method_handler_status).value = false;
-                PostFinanceCheckoutCheckout.activateLoader(false);
+                WalleeCheckout.activateLoader(false);
             }
         },
 
@@ -141,7 +141,7 @@
             let alert = document.createElement('div');
             alert.setAttribute('class', 'alert alert-danger');
             alert.setAttribute('role', 'alert');
-            alert.setAttribute('id', 'postfinancecheckout-errors');
+            alert.setAttribute('id', 'wallee-errors');
             document.getElementsByClassName('flashbags')[0].appendChild(alert);
 
             let alertContentContainer = document.createElement('div');
@@ -167,14 +167,14 @@
         },
 
         hideErrors: function() {
-            let errorElement = document.getElementById('postfinancecheckout-errors');
+            let errorElement = document.getElementById('wallee-errors');
             if (errorElement) {
                 errorElement.parentNode.removeChild(errorElement);
             }
         }
     };
 
-    window.PostFinanceCheckoutCheckout = PostFinanceCheckoutCheckout;
+    window.WalleeCheckout = WalleeCheckout;
 
 }(typeof window !== "undefined" ? window : this));
 
@@ -182,9 +182,9 @@
  * Vanilla JS over JQuery
  */
 window.addEventListener('load', function (e) {
-    PostFinanceCheckoutCheckout.init();
-    window.history.pushState({}, document.title, PostFinanceCheckoutCheckout.cart_recreate_url);
-    window.history.pushState({}, document.title, PostFinanceCheckoutCheckout.checkout_url);
+    WalleeCheckout.init();
+    window.history.pushState({}, document.title, WalleeCheckout.cart_recreate_url);
+    window.history.pushState({}, document.title, WalleeCheckout.checkout_url);
 }, false);
 
 /**
@@ -195,5 +195,5 @@ window.addEventListener('popstate', function (e) {
     if (window.history.state == null) { // This means it's page load
         return;
     }
-    window.location.href = PostFinanceCheckoutCheckout.cart_recreate_url;
+    window.location.href = WalleeCheckout.cart_recreate_url;
 }, false);

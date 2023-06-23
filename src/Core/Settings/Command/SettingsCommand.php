@@ -1,36 +1,36 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Settings\Command;
+namespace WalleePayment\Core\Settings\Command;
 
 use Symfony\Component\{
 	Console\Command\Command,
 	Console\Input\InputInterface,
 	Console\Input\InputOption,
 	Console\Output\OutputInterface};
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Settings\Options\Integration,
 	Settings\Service\SettingsService};
 
 /**
  * Class SettingsCommand
  * @internal
- * @package PostFinanceCheckoutPayment\Core\Settings\Command
+ * @package WalleePayment\Core\Settings\Command
  */
 class SettingsCommand extends Command {
 
 	/**
 	 * @var string
 	 */
-	protected static $defaultName = 'postfinancecheckout:settings:install';
+	protected static $defaultName = 'wallee:settings:install';
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
 	/**
 	 * SettingsCommand constructor.
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(SettingsService $settingsService)
 	{
@@ -45,7 +45,7 @@ class SettingsCommand extends Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$output->writeln('Set PostFinanceCheckoutPayment settings...');
+		$output->writeln('Set WalleePayment settings...');
 		$this->settingsService->updateSettings([
 			SettingsService::CONFIG_APPLICATION_KEY                     => $input->getOption(SettingsService::CONFIG_APPLICATION_KEY),
 			SettingsService::CONFIG_EMAIL_ENABLED                       => $input->getOption(SettingsService::CONFIG_EMAIL_ENABLED),
@@ -67,8 +67,8 @@ class SettingsCommand extends Command {
 	 */
 	protected function configure()
 	{
-		$this->setDescription('Sets PostFinanceCheckoutPayment settings.')
-			 ->setHelp('This command updates PostFinanceCheckoutPayment settings for all SalesChannels.')
+		$this->setDescription('Sets WalleePayment settings.')
+			 ->setHelp('This command updates WalleePayment settings for all SalesChannels.')
 			 ->addOption(
 				 SettingsService::CONFIG_APPLICATION_KEY,
 				 SettingsService::CONFIG_APPLICATION_KEY,

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Transaction\Controller;
+namespace WalleePayment\Core\Api\Transaction\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -10,22 +10,22 @@ use Symfony\Component\{
 	HttpFoundation\Request,
 	HttpFoundation\Response,
 	Routing\Annotation\Route};
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\TransactionState};
-use PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService;
+use WalleePayment\Core\Settings\Service\SettingsService;
 
 
 /**
  * Class TransactionCompletionController
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Transaction\Controller
+ * @package WalleePayment\Core\Api\Transaction\Controller
  *
  * @RouteScope(scopes={"api"})
  */
 class TransactionCompletionController extends AbstractController {
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
@@ -37,7 +37,7 @@ class TransactionCompletionController extends AbstractController {
 	/**
 	 * TransactionCompletionController constructor.
 	 *
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(SettingsService $settingsService)
 	{
@@ -58,13 +58,13 @@ class TransactionCompletionController extends AbstractController {
 	/**
 	 * @param \Symfony\Component\HttpFoundation\Request $request
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/transaction-completion/create-transaction-completion/",
-	 *     name="api.action.postfinancecheckout.transaction-completion.create-transaction-completion",
+	 *     "/api/_action/wallee/transaction-completion/create-transaction-completion/",
+	 *     name="api.action.wallee.transaction-completion.create-transaction-completion",
 	 *     methods={"POST"}
 	 *     )
 	 */

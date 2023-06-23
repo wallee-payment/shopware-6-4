@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Configuration\Controller;
+namespace WalleePayment\Core\Api\Configuration\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\{
@@ -12,7 +12,7 @@ use Symfony\Component\{
 	HttpFoundation\Request,
 	HttpFoundation\Response,
 	Routing\Annotation\Route};
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Api\OrderDeliveryState\Service\OrderDeliveryStateService,
 	Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService,
 	Api\WebHooks\Service\WebHooksService,
@@ -22,15 +22,15 @@ use PostFinanceCheckoutPayment\Core\{
 /**
  * Class ConfigurationController
  *
- * This class handles web calls that are made via the PostFinanceCheckoutPayment settings page.
+ * This class handles web calls that are made via the WalleePayment settings page.
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Config\Controller
+ * @package WalleePayment\Core\Api\Config\Controller
  * @RouteScope(scopes={"api"})
  */
 class ConfigurationController extends AbstractController {
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Api\WebHooks\Service\WebHooksService
+	 * @var \WalleePayment\Core\Api\WebHooks\Service\WebHooksService
 	 */
 	protected $webHooksService;
 
@@ -40,17 +40,17 @@ class ConfigurationController extends AbstractController {
 	protected $logger;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Util\PaymentMethodUtil
+	 * @var \WalleePayment\Core\Util\PaymentMethodUtil
 	 */
 	private $paymentMethodUtil;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService
+	 * @var \WalleePayment\Core\Api\PaymentMethodConfiguration\Service\PaymentMethodConfigurationService
 	 */
 	private $paymentMethodConfigurationService;
 
@@ -85,24 +85,24 @@ class ConfigurationController extends AbstractController {
 	}
 
 	/**
-	 * Set PostFinanceCheckoutPayment as the default payment for a give sales channel
+	 * Set WalleePayment as the default payment for a give sales channel
 	 *
 	 * @param \Symfony\Component\HttpFoundation\Request $request
 	 * @param \Shopware\Core\Framework\Context          $context
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/configuration/set-postfinancecheckout-as-sales-channel-payment-default",
-	 *     name="api.action.postfinancecheckout.configuration.set-postfinancecheckout-as-sales-channel-payment-default",
+	 *     "/api/_action/wallee/configuration/set-wallee-as-sales-channel-payment-default",
+	 *     name="api.action.wallee.configuration.set-wallee-as-sales-channel-payment-default",
 	 *     methods={"POST"}
 	 *     )
 	 */
-	public function setPostFinanceCheckoutAsSalesChannelPaymentDefault(Request $request, Context $context): JsonResponse
+	public function setWalleeAsSalesChannelPaymentDefault(Request $request, Context $context): JsonResponse
 	{
 		$salesChannelId = $request->request->get('salesChannelId');
 		$salesChannelId = ($salesChannelId == 'null') ? null : $salesChannelId;
 
-		$this->paymentMethodUtil->setPostFinanceCheckoutAsDefaultPaymentMethod($context, $salesChannelId);
+		$this->paymentMethodUtil->setWalleeAsDefaultPaymentMethod($context, $salesChannelId);
 		return new JsonResponse([]);
 	}
 
@@ -111,13 +111,13 @@ class ConfigurationController extends AbstractController {
 	 *
 	 * @param \Symfony\Component\HttpFoundation\Request $request
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/configuration/register-web-hooks",
-	 *     name="api.action.postfinancecheckout.configuration.register-web-hooks",
+	 *     "/api/_action/wallee/configuration/register-web-hooks",
+	 *     name="api.action.wallee.configuration.register-web-hooks",
 	 *     methods={"POST"}
 	 *   )
 	 */
@@ -145,8 +145,8 @@ class ConfigurationController extends AbstractController {
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/configuration/synchronize-payment-method-configuration",
-	 *     name="api.action.postfinancecheckout.configuration.synchronize-payment-method-configuration",
+	 *     "/api/_action/wallee/configuration/synchronize-payment-method-configuration",
+	 *     name="api.action.wallee.configuration.synchronize-payment-method-configuration",
 	 *     methods={"POST"}
 	 *   )
 	 */
@@ -182,15 +182,15 @@ class ConfigurationController extends AbstractController {
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/configuration/install-order-delivery-states",
-	 *     name="api.action.postfinancecheckout.configuration.install-order-delivery-states",
+	 *     "/api/_action/wallee/configuration/install-order-delivery-states",
+	 *     name="api.action.wallee.configuration.install-order-delivery-states",
 	 *     methods={"POST"}
 	 *   )
 	 */
 	public function installOrderDeliveryStates(Context $context): JsonResponse
 	{
 		/**
-		 * @var \PostFinanceCheckoutPayment\Core\Api\OrderDeliveryState\Service\OrderDeliveryStateService $orderDeliveryStateService
+		 * @var \WalleePayment\Core\Api\OrderDeliveryState\Service\OrderDeliveryStateService $orderDeliveryStateService
 		 */
 		$orderDeliveryStateService = $this->container->get(OrderDeliveryStateService::class);
 		$orderDeliveryStateService->install($context);

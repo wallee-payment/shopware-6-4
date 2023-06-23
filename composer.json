@@ -1,57 +1,57 @@
 {
   "authors": [
 	{
-	  "homepage": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html",
-	  "name": "PostFinance Checkout"
+	  "homepage": "https://www.wallee.com",
+	  "name": "wallee"
 	}
   ],
   "autoload": {
 	"psr-4": {
-	  "PostFinanceCheckoutPayment\\": "src/"
+	  "WalleePayment\\": "src/"
 	}
   },
   "conflict": {
 	"shopware/administration": "<6.4.2.1,>=7",
 	"shopware/storefront": "<6.4.2.1,>=7"
   },
-  "description": "PostFinanceCheckout integration for Shopware 6",
+  "description": "Wallee integration for Shopware 6",
   "extra": {
-	"copyright": "(c) by PostFinance Checkout",
+	"copyright": "(c) by wallee",
 	"description": {
-	  "de-DE": "PostFinanceCheckout integration für Shopware 6",
-	  "en-GB": "PostFinanceCheckout integration for Shopware 6",
-	  "fr-FR": "Intégration de PostFinanceCheckout pour Shopware 6",
-      "it-IT": "Integrazione PostFinanceCheckout per Shopware"
+	  "de-DE": "Wallee integration für Shopware 6",
+	  "en-GB": "Wallee integration for Shopware 6",
+	  "fr-FR": "Intégration de Wallee pour Shopware 6",
+      "it-IT": "Integrazione Wallee per Shopware"
 	},
 	"label": {
-	  "de-DE": "PostFinanceCheckout Produkte für Shopware 6",
-	  "en-GB": "PostFinanceCheckout Products for Shopware 6",
-	  "fr-FR": "PostFinanceCheckout Produits for Shopware 6",
-	  "it-IT": "PostFinanceCheckout Prodotti per Shopware 6"
+	  "de-DE": "Wallee Produkte für Shopware 6",
+	  "en-GB": "Wallee Products for Shopware 6",
+	  "fr-FR": "Wallee Produits for Shopware 6",
+	  "it-IT": "Wallee Prodotti per Shopware 6"
 	},
 	"manufacturerLink": {
-	  "de-DE": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html",
-	  "en-GB": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html",
-	  "fr-FR": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html",
-      "it-IT": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html"
+	  "de-DE": "https://www.wallee.com",
+	  "en-GB": "https://www.wallee.com",
+	  "fr-FR": "https://www.wallee.com",
+      "it-IT": "https://www.wallee.com"
 	},
 	"supportLink": {
-	  "de-DE": "https://www.postfinance.ch/en/business/support.html",
-	  "en-GB": "https://www.postfinance.ch/en/business/support.html",
-	  "fr-FR": "https://www.postfinance.ch/en/business/support.html",
-      "it-IT": "https://www.postfinance.ch/en/business/support.html"
+	  "de-DE": "https://app-wallee.com/space/select?target=/support",
+	  "en-GB": "https://app-wallee.com/space/select?target=/support",
+	  "fr-FR": "https://app-wallee.com/space/select?target=/support",
+      "it-IT": "https://app-wallee.com/space/select?target=/support"
 	},
-	"shopware-plugin-class": "PostFinanceCheckoutPayment\\PostFinanceCheckoutPayment"
+	"shopware-plugin-class": "WalleePayment\\WalleePayment"
   },
-  "homepage": "https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html/",
+  "homepage": "https://www.wallee.com/",
   "keywords": [
-	"PostFinance Checkout",
+	"wallee",
 	"payment",
 	"php",
 	"shopware"
   ],
   "license": "Apache-2.0",
-  "name": "postfinancecheckout/shopware-6",
+  "name": "wallee/shopware-6",
   "require": {
 	"ext-curl": "*",
 	"ext-json": "*",

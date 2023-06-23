@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Refund\Entity;
+namespace WalleePayment\Core\Api\Refund\Entity;
 
 use Shopware\Core\{
 	Framework\DataAbstractionLayer\EntityDefinition,
@@ -14,16 +14,16 @@ use Shopware\Core\{
 	Framework\DataAbstractionLayer\Field\StringField,
 	Framework\DataAbstractionLayer\Field\UpdatedAtField,
 	Framework\DataAbstractionLayer\FieldCollection};
-use PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntityDefinition;
+use WalleePayment\Core\Api\Transaction\Entity\TransactionEntityDefinition;
 
 /**
  * Class RefundEntityDefinition
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Refund\Entity
+ * @package WalleePayment\Core\Api\Refund\Entity
  */
 class RefundEntityDefinition extends EntityDefinition {
 
-	public const ENTITY_NAME = 'postfinancecheckout_refund';
+	public const ENTITY_NAME = 'wallee_refund';
 
 	/**
 	 * @return string

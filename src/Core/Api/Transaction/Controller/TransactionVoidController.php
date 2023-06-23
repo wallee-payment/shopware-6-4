@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Transaction\Controller;
+namespace WalleePayment\Core\Api\Transaction\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -10,21 +10,21 @@ use Symfony\Component\{
 	HttpFoundation\Request,
 	HttpFoundation\Response,
 	Routing\Annotation\Route};
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\TransactionState};
-use PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService;
+use WalleePayment\Core\Settings\Service\SettingsService;
 
 /**
  * Class TransactionVoidController
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Transaction\Controller
+ * @package WalleePayment\Core\Api\Transaction\Controller
  *
  * @RouteScope(scopes={"api"})
  */
 class TransactionVoidController extends AbstractController {
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
@@ -36,7 +36,7 @@ class TransactionVoidController extends AbstractController {
 	/**
 	 * TransactionVoidController constructor.
 	 *
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(SettingsService $settingsService)
 	{
@@ -57,13 +57,13 @@ class TransactionVoidController extends AbstractController {
 	/**
 	 * @param \Symfony\Component\HttpFoundation\Request $request
 	 * @return \Symfony\Component\HttpFoundation\JsonResponse
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 *
 	 * @Route(
-	 *     "/api/_action/postfinancecheckout/transaction-void/create-transaction-void/",
-	 *     name="api.action.postfinancecheckout.transaction-void.create-transaction-void",
+	 *     "/api/_action/wallee/transaction-void/create-transaction-void/",
+	 *     name="api.action.wallee.transaction-void.create-transaction-void",
 	 *     methods={"POST"}
 	 *     )
 	 */

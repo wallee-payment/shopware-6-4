@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Util\Payload;
+namespace WalleePayment\Core\Util\Payload;
 
 
 use Psr\Container\ContainerInterface;
@@ -15,7 +15,7 @@ use Shopware\Core\{
 };
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\AddressCreate,
 	Model\ChargeAttempt,
 	Model\CreationEntityState,
@@ -29,7 +29,7 @@ use PostFinanceCheckout\Sdk\{
 	Model\TaxCreate,
 	Model\TransactionCreate
 };
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Api\PaymentMethodConfiguration\Entity\PaymentMethodConfigurationEntity,
 	Settings\Struct\Settings,
 	Util\Exception\InvalidPayloadException,
@@ -41,20 +41,20 @@ use PostFinanceCheckoutPayment\Core\{
 /**
  * Class TransactionPayload
  *
- * @package PostFinanceCheckoutPayment\Core\Util\Payload
+ * @package WalleePayment\Core\Util\Payload
  */
 class TransactionPayload extends AbstractPayload
 {
 
 	use CustomProductsLineItems;
 
-	public const ORDER_TRANSACTION_CUSTOM_FIELDS_POSTFINANCECHECKOUT_SPACE_ID = 'postfinancecheckout_space_id';
-	public const ORDER_TRANSACTION_CUSTOM_FIELDS_POSTFINANCECHECKOUT_TRANSACTION_ID = 'postfinancecheckout_transaction_id';
+	public const ORDER_TRANSACTION_CUSTOM_FIELDS_WALLEE_SPACE_ID = 'wallee_space_id';
+	public const ORDER_TRANSACTION_CUSTOM_FIELDS_WALLEE_TRANSACTION_ID = 'wallee_transaction_id';
 
-	public const POSTFINANCECHECKOUT_METADATA_SALES_CHANNEL_ID = 'salesChannelId';
-	public const POSTFINANCECHECKOUT_METADATA_ORDER_ID = 'orderId';
-	public const POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID = 'orderTransactionId';
-	public const POSTFINANCECHECKOUT_METADATA_CUSTOMER_NAME = 'customerName';
+	public const WALLEE_METADATA_SALES_CHANNEL_ID = 'salesChannelId';
+	public const WALLEE_METADATA_ORDER_ID = 'orderId';
+	public const WALLEE_METADATA_ORDER_TRANSACTION_ID = 'orderTransactionId';
+	public const WALLEE_METADATA_CUSTOMER_NAME = 'customerName';
 
 
 	/**
@@ -68,7 +68,7 @@ class TransactionPayload extends AbstractPayload
 	protected $transaction;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Struct\Settings
+	 * @var \WalleePayment\Core\Settings\Struct\Settings
 	 */
 	protected $settings;
 
@@ -78,7 +78,7 @@ class TransactionPayload extends AbstractPayload
 	protected $container;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Util\LocaleCodeProvider
+	 * @var \WalleePayment\Core\Util\LocaleCodeProvider
 	 */
 	private $localeCodeProvider;
 
@@ -91,9 +91,9 @@ class TransactionPayload extends AbstractPayload
 	 * TransactionPayload constructor.
 	 *
 	 * @param \Psr\Container\ContainerInterface $container
-	 * @param \PostFinanceCheckoutPayment\Core\Util\LocaleCodeProvider $localeCodeProvider
+	 * @param \WalleePayment\Core\Util\LocaleCodeProvider $localeCodeProvider
 	 * @param \Shopware\Core\System\SalesChannel\SalesChannelContext $salesChannelContext
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Struct\Settings $settings
+	 * @param \WalleePayment\Core\Settings\Struct\Settings $settings
 	 * @param \Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct $transaction
 	 */
 	public function __construct(
@@ -115,7 +115,7 @@ class TransactionPayload extends AbstractPayload
 	/**
 	 * Get Transaction Payload
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\TransactionCreate
+	 * @return \Wallee\Sdk\Model\TransactionCreate
 	 * @throws \Exception
 	 */
 	public function get(): TransactionCreate
@@ -145,10 +145,10 @@ class TransactionPayload extends AbstractPayload
 			'language' => $this->localeCodeProvider->getLocaleCodeFromContext($this->salesChannelContext->getContext()) ?? null,
 			'merchant_reference' => $this->fixLength($this->transaction->getOrder()->getOrderNumber(), 100),
 			'meta_data' => [
-				self::POSTFINANCECHECKOUT_METADATA_ORDER_ID => $this->transaction->getOrder()->getId(),
-				self::POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID => $this->transaction->getOrderTransaction()->getId(),
-				self::POSTFINANCECHECKOUT_METADATA_SALES_CHANNEL_ID => $this->salesChannelContext->getSalesChannel()->getId(),
-				self::POSTFINANCECHECKOUT_METADATA_CUSTOMER_NAME => $customerName,
+				self::WALLEE_METADATA_ORDER_ID => $this->transaction->getOrder()->getId(),
+				self::WALLEE_METADATA_ORDER_TRANSACTION_ID => $this->transaction->getOrderTransaction()->getId(),
+				self::WALLEE_METADATA_SALES_CHANNEL_ID => $this->salesChannelContext->getSalesChannel()->getId(),
+				self::WALLEE_METADATA_CUSTOMER_NAME => $customerName,
 			],
 			'shipping_method' => $this->salesChannelContext->getShippingMethod()->getName() ? $this->fixLength($this->salesChannelContext->getShippingMethod()->getName(), 200) : null,
 			'space_view_id' => $this->settings->getSpaceViewId() ?? null,
@@ -216,13 +216,13 @@ class TransactionPayload extends AbstractPayload
 	/**
 	 * Get transaction line items
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate[]
+	 * @return \Wallee\Sdk\Model\LineItemCreate[]
 	 * @throws \Exception
 	 */
 	protected function getLineItems(): array
 	{
 		/**
-		 * @var \PostFinanceCheckout\Sdk\Model\LineItemCreate[] $lineItems
+		 * @var \Wallee\Sdk\Model\LineItemCreate[] $lineItems
 		 */
 		$lineItems = [];
 
@@ -290,7 +290,7 @@ class TransactionPayload extends AbstractPayload
 
 	/**
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate|null
+	 * @return \Wallee\Sdk\Model\LineItemCreate|null
 	 * @throws \Exception
 	 * @var \Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity $shopLineItem
 	 */
@@ -326,7 +326,7 @@ class TransactionPayload extends AbstractPayload
 			$productAttributes = $this->getCustomProductLineItemAttribute($shopLineItem);
 			$taxes = $this->getCustomProductTaxes(
 				$shopLineItem->getPrice()->getCalculatedTaxes(),
-				$this->translator->trans('postfinancecheckout.payload.taxes'),
+				$this->translator->trans('wallee.payload.taxes'),
 				$amount
 			);
 
@@ -335,7 +335,7 @@ class TransactionPayload extends AbstractPayload
 
 			$taxes = $this->getTaxes(
 				$shopLineItem->getPrice()->getCalculatedTaxes(),
-				$this->translator->trans('postfinancecheckout.payload.taxes')
+				$this->translator->trans('wallee.payload.taxes')
 			);
 		}
 
@@ -415,7 +415,7 @@ class TransactionPayload extends AbstractPayload
 	}
 
 	/**
-	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate|null
+	 * @return \Wallee\Sdk\Model\LineItemCreate|null
 	 */
 	protected function getShippingLineItem(): ?LineItemCreate
 	{
@@ -426,7 +426,7 @@ class TransactionPayload extends AbstractPayload
 
 			if ($amount > 0) {
 
-				$shippingName = $this->salesChannelContext->getShippingMethod()->getName() ?? $this->translator->trans('postfinancecheckout.payload.shipping.name');
+				$shippingName = $this->salesChannelContext->getShippingMethod()->getName() ?? $this->translator->trans('wallee.payload.shipping.name');
 				$taxes = $this->getTaxes(
 					$this->transaction->getOrder()->getShippingCosts()->getCalculatedTaxes(),
 					$shippingName
@@ -434,7 +434,7 @@ class TransactionPayload extends AbstractPayload
 
 				$lineItem = (new LineItemCreate())
 					->setAmountIncludingTax($amount)
-					->setName($this->fixLength($shippingName . ' ' . $this->translator->trans('postfinancecheckout.payload.shipping.lineItem'), 150))
+					->setName($this->fixLength($shippingName . ' ' . $this->translator->trans('wallee.payload.shipping.lineItem'), 150))
 					->setQuantity($this->transaction->getOrder()->getShippingCosts()->getQuantity() ?? 1)
 					->setTaxes($taxes)
 					->setSku($this->fixLength($shippingName . '-Shipping', 200))
@@ -459,9 +459,9 @@ class TransactionPayload extends AbstractPayload
 	/**
 	 * Get Adjustment Line Item
 	 *
-	 * @param \PostFinanceCheckout\Sdk\Model\LineItemCreate[] $lineItems
+	 * @param \Wallee\Sdk\Model\LineItemCreate[] $lineItems
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate|null
+	 * @return \Wallee\Sdk\Model\LineItemCreate|null
 	 * @throws \Exception
 	 */
 	protected function getAdjustmentLineItem(array &$lineItems): ?LineItemCreate
@@ -486,7 +486,7 @@ class TransactionPayload extends AbstractPayload
 
 			} else {
 				$lineItem = (new LineItemCreate())
-					->setName($this->translator->trans('postfinancecheckout.payload.adjustmentLineItem'))
+					->setName($this->translator->trans('wallee.payload.adjustmentLineItem'))
 					->setUniqueId('Adjustment-Line-Item')
 					->setSku('Adjustment-Line-Item')
 					->setQuantity(1);
@@ -510,7 +510,7 @@ class TransactionPayload extends AbstractPayload
 	 * @param \Shopware\Core\Checkout\Customer\CustomerEntity $customer
 	 * @param \Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity $customerAddressEntity
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\AddressCreate
+	 * @return \Wallee\Sdk\Model\AddressCreate
 	 * @throws \Exception
 	 */
 	protected function getAddressPayload(CustomerEntity $customer, CustomerAddressEntity $customerAddressEntity, bool $returnSalesTaxNumber = true): AddressCreate
@@ -627,13 +627,13 @@ class TransactionPayload extends AbstractPayload
 	/**
 	 * @param string $id
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\PaymentMethodConfiguration\Entity\PaymentMethodConfigurationEntity
+	 * @return \WalleePayment\Core\Api\PaymentMethodConfiguration\Entity\PaymentMethodConfigurationEntity
 	 */
 	protected function getPaymentConfiguration(string $id): PaymentMethodConfigurationEntity
 	{
 		$criteria = (new Criteria([$id]));
 
-		return $this->container->get('postfinancecheckout_payment_method_configuration.repository')
+		return $this->container->get('wallee_payment_method_configuration.repository')
 			->search($criteria, $this->salesChannelContext->getContext())
 			->getEntities()->first();
 	}
@@ -648,7 +648,7 @@ class TransactionPayload extends AbstractPayload
 	protected function getFailUrl(string $orderId): string
 	{
 		return $this->container->get('router')->generate(
-			'frontend.postfinancecheckout.checkout.recreate-cart',
+			'frontend.wallee.checkout.recreate-cart',
 			['orderId' => $orderId,],
 			UrlGeneratorInterface::ABSOLUTE_URL
 		);

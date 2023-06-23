@@ -245,4 +245,4 @@
 - Speichern Sie Rückerstattungen in db und laden Sie die Registerkarte Bestellung bei Änderungen neu
 
 # 1.0.0
-- Erste Version der PostFinanceCheckout-Integrationen für Shopware 6
+- Erste Version der Wallee-Integrationen für Shopware 6

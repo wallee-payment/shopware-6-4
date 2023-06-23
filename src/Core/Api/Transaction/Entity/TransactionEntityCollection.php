@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Transaction\Entity;
+namespace WalleePayment\Core\Api\Transaction\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class TransactionEntityCollection
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Transaction\Entity
+ * @package WalleePayment\Core\Api\Transaction\Entity
  *
  * @method void              add(TransactionEntity $entity)
  * @method void              set(string $key, TransactionEntity $entity)
@@ -23,7 +23,7 @@ class TransactionEntityCollection extends EntityCollection {
 	 * Get by transaction id
 	 *
 	 * @param int $transactionId
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntity|null
+	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntity|null
 	 */
 	public function getByTransactionId(int $transactionId): ?TransactionEntity
 	{

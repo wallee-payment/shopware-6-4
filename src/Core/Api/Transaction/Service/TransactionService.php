@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Transaction\Service;
+namespace WalleePayment\Core\Api\Transaction\Service;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -14,7 +14,7 @@ use Shopware\Core\{
 	System\SalesChannel\SalesChannelContext
 };
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\Transaction,
 	Model\TransactionPending,
 	Model\ChargeAttempt,
@@ -25,7 +25,7 @@ use PostFinanceCheckout\Sdk\{
 	Model\EntityQueryFilterType,
 };
 
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Api\OrderDeliveryState\Handler\OrderDeliveryStateHandler,
 	Api\Refund\Entity\RefundEntityCollection,
 	Api\Refund\Entity\RefundEntityDefinition,
@@ -40,7 +40,7 @@ use PostFinanceCheckoutPayment\Core\{
 /**
  * Class TransactionService
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Transaction\Service
+ * @package WalleePayment\Core\Api\Transaction\Service
  */
 class TransactionService {
 	/**
@@ -49,7 +49,7 @@ class TransactionService {
 	protected $container;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Util\LocaleCodeProvider
+	 * @var \WalleePayment\Core\Util\LocaleCodeProvider
 	 */
 	private $localeCodeProvider;
 
@@ -59,7 +59,7 @@ class TransactionService {
 	private $logger;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	private $settingsService;
 	
@@ -73,8 +73,8 @@ class TransactionService {
 	 * TransactionService constructor.
 	 *
 	 * @param \Psr\Container\ContainerInterface                                   $container
-	 * @param \PostFinanceCheckoutPayment\Core\Util\LocaleCodeProvider          $localeCodeProvider
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \WalleePayment\Core\Util\LocaleCodeProvider          $localeCodeProvider
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(
 		ContainerInterface $container,
@@ -109,9 +109,9 @@ class TransactionService {
 	 * @param \Shopware\Core\System\SalesChannel\SalesChannelContext             $salesChannelContext
 	 *
 	 * @return string
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 */
 	public function create(
 		AsyncPaymentTransactionStruct $transaction,
@@ -140,7 +140,7 @@ class TransactionService {
 		$createdTransaction = $apiClient->getTransactionService()
 										->confirm($settings->getSpaceId(), $pendingTransaction);
 		
-		$this->addPostFinanceCheckoutTransactionId(
+		$this->addWalleeTransactionId(
 			$transaction,
 			$salesChannelContext->getContext(),
 			$createdTransaction->getId(),
@@ -148,7 +148,7 @@ class TransactionService {
 		);
 
 		$redirectUrl = $this->container->get('router')->generate(
-			'frontend.postfinancecheckout.checkout.pay',
+			'frontend.wallee.checkout.pay',
 			['orderId' => $transaction->getOrder()->getId(),],
 			UrlGeneratorInterface::ABSOLUTE_URL
 		);
@@ -177,30 +177,30 @@ class TransactionService {
 	/**
 	 * @param \Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct $transaction
 	 * @param \Shopware\Core\Framework\Context                                   $context
-	 * @param int                                                                $postfinancecheckoutTransactionId
+	 * @param int                                                                $walleeTransactionId
 	 * @param int                                                                $spaceId
 	 */
-	protected function addPostFinanceCheckoutTransactionId(
+	protected function addWalleeTransactionId(
 		AsyncPaymentTransactionStruct $transaction,
 		Context $context,
-		int $postfinancecheckoutTransactionId,
+		int $walleeTransactionId,
 		int $spaceId
 	): void
 	{
 		$data = [
 			'id'           => $transaction->getOrderTransaction()->getId(),
 			'customFields' => [
-				TransactionPayload::ORDER_TRANSACTION_CUSTOM_FIELDS_POSTFINANCECHECKOUT_TRANSACTION_ID => $postfinancecheckoutTransactionId,
-				TransactionPayload::ORDER_TRANSACTION_CUSTOM_FIELDS_POSTFINANCECHECKOUT_SPACE_ID       => $spaceId,
+				TransactionPayload::ORDER_TRANSACTION_CUSTOM_FIELDS_WALLEE_TRANSACTION_ID => $walleeTransactionId,
+				TransactionPayload::ORDER_TRANSACTION_CUSTOM_FIELDS_WALLEE_SPACE_ID       => $spaceId,
 			],
 		];
 		$this->container->get('order_transaction.repository')->update([$data], $context);
 	}
 
 	/**
-	 * Persist PostFinanceCheckout transaction
+	 * Persist Wallee transaction
 	 *
-	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
+	 * @param \Wallee\Sdk\Model\Transaction $transaction
 	 * @param \Shopware\Core\Framework\Context             $context
 	 * @param string|null                                  $paymentMethodId
 	 * @param string|null                                  $salesChannelId
@@ -221,8 +221,8 @@ class TransactionService {
 				$salesChannelId = $transactionMetaData['salesChannelId'] ?? '';
 			}
 
-			$orderId             = $transactionMetaData[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_ID];
-			$orderTransactionId  = $transactionMetaData[TransactionPayload::POSTFINANCECHECKOUT_METADATA_ORDER_TRANSACTION_ID];
+			$orderId             = $transactionMetaData[TransactionPayload::WALLEE_METADATA_ORDER_ID];
+			$orderTransactionId  = $transactionMetaData[TransactionPayload::WALLEE_METADATA_ORDER_TRANSACTION_ID];
 
 			$dataParamValue = json_decode(strval($transaction), true);
 			$brandName = '';
@@ -254,8 +254,8 @@ class TransactionService {
                 $payId = $this->getChargeAttemptAdditionalData($chargeAttempt, self::PAY_ID_KEY);
                 $dataParamValue['payId']  = $payId ? $payId[0] : '';
     
-                $dataParamValue['customerName']  = isset($transactionMetaData[TransactionPayload::POSTFINANCECHECKOUT_METADATA_CUSTOMER_NAME])
-                    ? $transactionMetaData[TransactionPayload::POSTFINANCECHECKOUT_METADATA_CUSTOMER_NAME]
+                $dataParamValue['customerName']  = isset($transactionMetaData[TransactionPayload::WALLEE_METADATA_CUSTOMER_NAME])
+                    ? $transactionMetaData[TransactionPayload::WALLEE_METADATA_CUSTOMER_NAME]
                     : '';
 				
                 $creditCardValidity = $this->getChargeAttemptAdditionalData($chargeAttempt, self::CARD_VALIDITY_KEY);
@@ -348,7 +348,7 @@ class TransactionService {
 	 * @param string                           $orderId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntity
+	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntity
 	 */
 	public function getByOrderId(string $orderId, Context $context): TransactionEntity
 	{
@@ -358,15 +358,15 @@ class TransactionService {
 	}
 
 	/**
-	 * Read transaction from PostFinanceCheckout API
+	 * Read transaction from Wallee API
 	 *
 	 * @param int    $transactionId
 	 * @param string $salesChannelId
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\Transaction
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @return \Wallee\Sdk\Model\Transaction
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 */
 	public function read(int $transactionId, string $salesChannelId): Transaction
 	{
@@ -375,12 +375,12 @@ class TransactionService {
 	}
 
 	/**
-	 * Get transaction entity by PostFinanceCheckout transaction id
+	 * Get transaction entity by Wallee transaction id
 	 *
 	 * @param int                              $transactionId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntity|null
+	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntity|null
 	 */
 	public function getByTransactionId(int $transactionId, Context $context): ?TransactionEntity
 	{
@@ -393,12 +393,12 @@ class TransactionService {
 	}
 
 	/**
-	 * Get transaction entity by PostFinanceCheckout order transaction id
+	 * Get transaction entity by Wallee order transaction id
 	 *
 	 * @param string                           $transactionId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntity|null
+	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntity|null
 	 */
 	public function getByOrderTransactionId(string $orderTransactionId, Context $context): ?TransactionEntity
 	{
@@ -411,12 +411,12 @@ class TransactionService {
 	}
 
 	/**
-	 * Get transaction entity by PostFinanceCheckout transaction id
+	 * Get transaction entity by Wallee transaction id
 	 *
 	 * @param int                              $transactionId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Refund\Entity\RefundEntityCollection
+	 * @return \WalleePayment\Core\Api\Refund\Entity\RefundEntityCollection
 	 */
 	public function getRefundEntityCollectionByTransactionId(int $transactionId, Context $context): ?RefundEntityCollection
 	{

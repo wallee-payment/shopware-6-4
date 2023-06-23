@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Storefront\Checkout\Controller;
+namespace WalleePayment\Core\Storefront\Checkout\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\{
@@ -34,11 +34,11 @@ use Symfony\Component\{
 	Routing\Annotation\Route,
 	Routing\Generator\UrlGeneratorInterface
 };
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\Transaction,
 	Model\TransactionState
 };
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Api\Transaction\Service\TransactionService,
 	Settings\Options\Integration,
 	Settings\Service\SettingsService,
@@ -50,7 +50,7 @@ use PostFinanceCheckoutPayment\Core\{
 /**
  * Class CheckoutController
  *
- * @package PostFinanceCheckoutPayment\Core\Storefront\Checkout\Controller
+ * @package WalleePayment\Core\Storefront\Checkout\Controller
  *
  * @RouteScope(scopes={"storefront"})
  */
@@ -67,17 +67,17 @@ class CheckoutController extends StorefrontController {
 	protected $cartService;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	protected $settingsService;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Struct\Settings
+	 * @var \WalleePayment\Core\Settings\Struct\Settings
 	 */
 	protected $settings;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService
+	 * @var \WalleePayment\Core\Api\Transaction\Service\TransactionService
 	 */
 	protected $transactionService;
 
@@ -101,8 +101,8 @@ class CheckoutController extends StorefrontController {
 	 *
 	 * @param \Shopware\Core\Checkout\Cart\LineItemFactoryRegistry                          $lineItemFactoryRegistry
 	 * @param \Shopware\Core\Checkout\Cart\SalesChannel\CartService                         $cartService
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService           $settingsService
-	 * @param \PostFinanceCheckoutPayment\Core\Api\Transaction\Service\TransactionService $transactionService
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService           $settingsService
+	 * @param \WalleePayment\Core\Api\Transaction\Service\TransactionService $transactionService
 	 * @param \Shopware\Storefront\Page\GenericPageLoaderInterface                          $genericLoader
 	 * @param \Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute                 $orderRoute
 	 */
@@ -140,13 +140,13 @@ class CheckoutController extends StorefrontController {
 	 * @param \Symfony\Component\HttpFoundation\Request              $request
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 *
 	 * @Route(
-	 *     "/postfinancecheckout/checkout/pay",
-	 *     name="frontend.postfinancecheckout.checkout.pay",
+	 *     "/wallee/checkout/pay",
+	 *     name="frontend.wallee.checkout.pay",
 	 *     options={"seo": "false"},
 	 *     methods={"GET"}
 	 *     )
@@ -201,7 +201,7 @@ class CheckoutController extends StorefrontController {
 												 );
 
 		if (empty($possiblePaymentMethods)) {
-			$this->addFlash('danger', $this->trans('postfinancecheckout.paymentMethod.notAvailable'));
+			$this->addFlash('danger', $this->trans('wallee.paymentMethod.notAvailable'));
 			return $this->redirect($recreateCartUrl, Response::HTTP_MOVED_PERMANENTLY);
 		}
 
@@ -214,16 +214,16 @@ class CheckoutController extends StorefrontController {
 			->setDeviceJavascriptUrl($this->settings->getSpaceId(), $this->container->get('session')->getId())
 			->setTransactionPossiblePaymentMethods($possiblePaymentMethods)
 			->setCheckoutUrl($this->generateUrl(
-				'frontend.postfinancecheckout.checkout.pay',
+				'frontend.wallee.checkout.pay',
 				['orderId' => $orderId,],
 				UrlGeneratorInterface::ABSOLUTE_URL
 			))
 			->setCartRecreateUrl($recreateCartUrl);
 		$page             = $this->load($request, $salesChannelContext);
-		$page->addExtension('postFinanceCheckoutData', $checkoutPageData);
+		$page->addExtension('walleeData', $checkoutPageData);
 
 		return $this->renderStorefront(
-			'@PostFinanceCheckoutPayment/storefront/page/checkout/order/postfinancecheckout.html.twig',
+			'@WalleePayment/storefront/page/checkout/order/wallee.html.twig',
 			['page' => $page]
 		);
 	}
@@ -234,9 +234,9 @@ class CheckoutController extends StorefrontController {
 	 * @param int $transactionId
 	 *
 	 * @return string
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 */
 	private function getTransactionJavaScriptUrl(int $transactionId): string
 	{
@@ -261,10 +261,10 @@ class CheckoutController extends StorefrontController {
 	 * @param                                  $orderId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\Transaction
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @return \Wallee\Sdk\Model\Transaction
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 */
 	private function getTransaction($orderId, Context $context): Transaction
 	{
@@ -341,8 +341,8 @@ class CheckoutController extends StorefrontController {
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 *
 	 * @Route(
-	 *     "/postfinancecheckout/checkout/recreate-cart",
-	 *     name="frontend.postfinancecheckout.checkout.recreate-cart",
+	 *     "/wallee/checkout/recreate-cart",
+	 *     name="frontend.wallee.checkout.recreate-cart",
 	 *     options={"seo": "false"},
 	 *     methods={"GET"}
 	 *     )

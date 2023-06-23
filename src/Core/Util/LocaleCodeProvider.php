@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Util;
+namespace WalleePayment\Core\Util;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ use Shopware\Core\{
 /**
  * Class LocaleCodeProvider
  *
- * @package PostFinanceCheckoutPayment\Core\Util
+ * @package WalleePayment\Core\Util
  */
 class LocaleCodeProvider {
 
@@ -131,7 +131,7 @@ class LocaleCodeProvider {
 
 		foreach ($locales as $locale) {
 			$translation = $this->translator->trans($snippet, [], null, $locale);
-			$pattern     = '/^postfinancecheckout\./';
+			$pattern     = '/^wallee\./';
 
 			// there is a bug/lack of documentation on Shopware translations, sometimes the translation does not work
 

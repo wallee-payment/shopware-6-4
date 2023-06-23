@@ -52,7 +52,6 @@ trait WalleePaymentPluginTrait {
 	 * @param string                           $paymentMethodId
 	 * @param bool                             $active
 	 * @param \Shopware\Core\Framework\Context $context
-	 * @return void
 	 */
 	protected function setPaymentMethodIsActive(string $paymentMethodId, bool $active, Context $context): void
 	{
@@ -68,7 +67,6 @@ trait WalleePaymentPluginTrait {
 
 	/**
 	 * @param \Shopware\Core\Framework\Context $context
-	 * @return void
 	 */
 	protected function disablePaymentMethods(Context $context): void
 	{
@@ -80,7 +78,6 @@ trait WalleePaymentPluginTrait {
 
 	/**
 	 * @param \Shopware\Core\Framework\Context $context
-	 * @return void
 	 */
 	private function removeConfiguration(Context $context): void
 	{
@@ -100,7 +97,6 @@ trait WalleePaymentPluginTrait {
 	 *
 	 * @internal
 	 * @param \Shopware\Core\Framework\Plugin\Context\UninstallContext $uninstallContext
-	 * @return void
 	 */
 	protected function deleteUserData(UninstallContext $uninstallContext): void
 	{

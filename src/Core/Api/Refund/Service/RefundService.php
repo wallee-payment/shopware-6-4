@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Api\Refund\Service;
+namespace WalleePayment\Core\Api\Refund\Service;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -10,11 +10,11 @@ use Shopware\Core\{
 	Framework\DataAbstractionLayer\Search\Filter\EqualsFilter,
 	Framework\Uuid\Uuid
 };
-use PostFinanceCheckout\Sdk\{
+use Wallee\Sdk\{
 	Model\Refund,
 	Model\Transaction
 };
-use PostFinanceCheckoutPayment\Core\{
+use WalleePayment\Core\{
 	Api\Refund\Entity\RefundEntity,
 	Api\Transaction\Entity\TransactionEntity,
 	Api\Transaction\Entity\TransactionEntityDefinition,
@@ -25,7 +25,7 @@ use PostFinanceCheckoutPayment\Core\{
 /**
  * Class RefundService
  *
- * @package PostFinanceCheckoutPayment\Core\Api\Refund\Service
+ * @package WalleePayment\Core\Api\Refund\Service
  */
 class RefundService {
 
@@ -40,7 +40,7 @@ class RefundService {
 	private $logger;
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService
+	 * @var \WalleePayment\Core\Settings\Service\SettingsService
 	 */
 	private $settingsService;
 
@@ -48,7 +48,7 @@ class RefundService {
 	 * RefundService constructor.
 	 *
 	 * @param \Psr\Container\ContainerInterface                                   $container
-	 * @param \PostFinanceCheckoutPayment\Core\Settings\Service\SettingsService $settingsService
+	 * @param \WalleePayment\Core\Settings\Service\SettingsService $settingsService
 	 */
 	public function __construct(ContainerInterface $container, SettingsService $settingsService)
 	{
@@ -75,12 +75,12 @@ class RefundService {
 	 *
 	 * A redirect to the url will be performed
 	 *
-	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
+	 * @param \Wallee\Sdk\Model\Transaction $transaction
 	 * @param string|null                                  $lineItemId
 	 * @param int                                          $quantity
 	 * @param \Shopware\Core\Framework\Context             $context
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\Refund|null
+	 * @return \Wallee\Sdk\Model\Refund|null
 	 * @throws \Exception
 	 */
 	public function create(Transaction $transaction, Context $context, ?string $lineItemId = null, int $quantity): ?Refund
@@ -111,11 +111,11 @@ class RefundService {
 	 *
 	 * A redirect to the url will be performed
 	 *
-	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
+	 * @param \Wallee\Sdk\Model\Transaction $transaction
 	 * @param float                                        $refundableAmount
 	 * @param \Shopware\Core\Framework\Context             $context
 	 *
-	 * @return \PostFinanceCheckout\Sdk\Model\Refund|null
+	 * @return \Wallee\Sdk\Model\Refund|null
 	 * @throws \Exception
 	 */
 	public function createRefundByAmount(Transaction $transaction, float $refundableAmount, Context $context): ?Refund
@@ -141,12 +141,12 @@ class RefundService {
 	}
 
 	/**
-	 * Get transaction entity by PostFinanceCheckout transaction id
+	 * Get transaction entity by Wallee transaction id
 	 *
 	 * @param int                              $transactionId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Transaction\Entity\TransactionEntity
+	 * @return \WalleePayment\Core\Api\Transaction\Entity\TransactionEntity
 	 */
 	public function getTransactionEntityByTransactionId(int $transactionId, Context $context): TransactionEntity
 	{
@@ -159,10 +159,10 @@ class RefundService {
 	}
 
 	/**
-	 * Persist PostFinanceCheckout transaction
+	 * Persist Wallee transaction
 	 *
 	 * @param \Shopware\Core\Framework\Context        $context
-	 * @param \PostFinanceCheckout\Sdk\Model\Refund $refund
+	 * @param \Wallee\Sdk\Model\Refund $refund
 	 */
 	public function upsert(Refund $refund, Context $context): void
 	{
@@ -180,7 +180,7 @@ class RefundService {
 			];
 
 			$data = array_filter($data);
-			$this->container->get('postfinancecheckout_refund.repository')->upsert([$data], $context);
+			$this->container->get('wallee_refund.repository')->upsert([$data], $context);
 
 		} catch (\Exception $exception) {
 			$this->logger->critical(__CLASS__ . ' : ' . __FUNCTION__ . ' : ' . $exception->getMessage());
@@ -188,16 +188,16 @@ class RefundService {
 	}
 
 	/**
-	 * Get refund entity by PostFinanceCheckout refund id
+	 * Get refund entity by Wallee refund id
 	 *
 	 * @param int                              $refundId
 	 * @param \Shopware\Core\Framework\Context $context
 	 *
-	 * @return \PostFinanceCheckoutPayment\Core\Api\Refund\Entity\RefundEntity|null
+	 * @return \WalleePayment\Core\Api\Refund\Entity\RefundEntity|null
 	 */
 	public function getByRefundId(int $refundId, Context $context): ?RefundEntity
 	{
-		return $this->container->get('postfinancecheckout_refund.repository')
+		return $this->container->get('wallee_refund.repository')
 							   ->search(
 								   (new Criteria())->addFilter(new EqualsFilter('refundId', $refundId)),
 								   $context

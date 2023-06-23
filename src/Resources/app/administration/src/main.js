@@ -1,3 +1,3 @@
-import './module/postfinancecheckout-order';
-import './module/postfinancecheckout-settings';
+import './module/wallee-order';
+import './module/wallee-settings';
 import './init/api-service.init';

@@ -247,4 +247,4 @@
 - Save refunds to db, and reload order tab on changes
 
 # 1.0.0
-- First version of the PostFinanceCheckout integrations for Shopware 6
+- First version of the Wallee integrations for Shopware 6

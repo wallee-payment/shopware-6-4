@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace PostFinanceCheckoutPayment\Core\Util\Analytics;
+namespace WalleePayment\Core\Util\Analytics;
 
-use PostFinanceCheckout\Sdk\ApiClient;
+use Wallee\Sdk\ApiClient;
 
 /**
  * Class Analytics
  *
- * @package PostFinanceCheckoutPayment\Core\Util\Analytics
+ * @package WalleePayment\Core\Util\Analytics
  */
 class Analytics {
 
@@ -28,7 +28,7 @@ class Analytics {
 	}
 
 	/**
-	 * @param \PostFinanceCheckout\Sdk\ApiClient $apiClient
+	 * @param \Wallee\Sdk\ApiClient $apiClient
 	 */
 	public static function addHeaders(ApiClient &$apiClient)
 	{

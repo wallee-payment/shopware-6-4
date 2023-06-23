@@ -1,35 +1,35 @@
 <?php declare(strict_types=1);
 
 
-namespace PostFinanceCheckoutPayment\Core\Api\WebHooks\Command;
+namespace WalleePayment\Core\Api\WebHooks\Command;
 
 use Symfony\Component\{
 	Console\Command\Command,
 	Console\Input\InputInterface,
 	Console\Output\OutputInterface};
-use PostFinanceCheckoutPayment\Core\Api\WebHooks\Service\WebHooksService;
+use WalleePayment\Core\Api\WebHooks\Service\WebHooksService;
 
 /**
  * Class WebHooksCommand
  *
- * @package PostFinanceCheckoutPayment\Core\Api\WebHooks\Command
+ * @package WalleePayment\Core\Api\WebHooks\Command
  */
 class WebHooksCommand extends Command {
 
 	/**
 	 * @var string
 	 */
-	protected static $defaultName = 'postfinancecheckout:webhooks:install';
+	protected static $defaultName = 'wallee:webhooks:install';
 
 	/**
-	 * @var \PostFinanceCheckoutPayment\Core\Api\WebHooks\Service\WebHooksService
+	 * @var \WalleePayment\Core\Api\WebHooks\Service\WebHooksService
 	 */
 	protected $webHooksService;
 
 	/**
 	 * WebHooksCommand constructor.
 	 *
-	 * @param \PostFinanceCheckoutPayment\Core\Api\WebHooks\Service\WebHooksService $webHooksService
+	 * @param \WalleePayment\Core\Api\WebHooks\Service\WebHooksService $webHooksService
 	 */
 	public function __construct(WebHooksService $webHooksService)
 	{
@@ -42,13 +42,13 @@ class WebHooksCommand extends Command {
 	 * @param \Symfony\Component\Console\Output\OutputInterface $output
 	 *
 	 * @return int
-	 * @throws \PostFinanceCheckout\Sdk\ApiException
-	 * @throws \PostFinanceCheckout\Sdk\Http\ConnectionException
-	 * @throws \PostFinanceCheckout\Sdk\VersioningException
+	 * @throws \Wallee\Sdk\ApiException
+	 * @throws \Wallee\Sdk\Http\ConnectionException
+	 * @throws \Wallee\Sdk\VersioningException
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$output->writeln('Install PostFinanceCheckoutPayment webhooks...');
+		$output->writeln('Install WalleePayment webhooks...');
 		$this->webHooksService->install();
 		return 0;
 	}
@@ -58,8 +58,8 @@ class WebHooksCommand extends Command {
 	 */
 	protected function configure()
 	{
-		$this->setDescription('Install PostFinanceCheckoutPayment webhooks.')
-			 ->setHelp('This command installs PostFinanceCheckoutPayment webhooks.');
+		$this->setDescription('Install WalleePayment webhooks.')
+			 ->setHelp('This command installs WalleePayment webhooks.');
 	}
 
 }
